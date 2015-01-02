@@ -48301,11 +48301,19 @@ reagent.core.partial = function() {
 goog.provide("cljs.battlesnake.snake");
 goog.require("cljs.core");
 goog.require("reagent.core");
-cljs.battlesnake.snake.simple_component = function simple_component() {
-  return new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "div", "div", 1057191632), new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "h3", "h3", 2067611163), "Hello Reagent!"], null), new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "div", "div", 1057191632), new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, 
-  [new cljs.core.Keyword(null, "p", "p", 151049309), "I am a component!"], null), new cljs.core.PersistentVector(null, 5, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "p.someclass", "p.someclass", -1904646929), "I have ", new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "strong", "strong", 269529E3), "bold"], null), new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, 
-  "span", "span", 1394872991), new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null, "style", "style", -496642736), new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null, "color", "color", 1011675173), "red"], null)], null), " and red "], null), "text."], null)], null)], null);
+cljs.battlesnake.snake.game_name = reagent.core.atom.call(null, "");
+cljs.battlesnake.snake.create_game = function create_game() {
+  return new cljs.core.PersistentVector(null, 4, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "div", "div", 1057191632), new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "h3", "h3", 2067611163), "Create a game"], null), new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "input", "input", 556931961), new cljs.core.PersistentArrayMap(null, 4, [new cljs.core.Keyword(null, 
+  "type", "type", 1174270348), "text", new cljs.core.Keyword(null, "value", "value", 305978217), cljs.core.deref.call(null, cljs.battlesnake.snake.game_name), new cljs.core.Keyword(null, "placeholder", "placeholder", -104873083), "Name the game!", new cljs.core.Keyword(null, "on-change", "on-change", -732046149), function(p1__5632_SHARP_) {
+    return cljs.core.reset_BANG_.call(null, cljs.battlesnake.snake.game_name, p1__5632_SHARP_.target.value);
+  }], null)], null), new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "input", "input", 556931961), new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null, "type", "type", 1174270348), "button", new cljs.core.Keyword(null, "value", "value", 305978217), "Start", new cljs.core.Keyword(null, "on-click", "on-click", 1632826543), function() {
+    return cljs.core.reset_BANG_.call(null, cljs.battlesnake.snake.game_name, "");
+  }], null)], null)], null);
 };
-reagent.core.render_component.call(null, function() {
-  return new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.battlesnake.snake.simple_component], null);
-}, document.body);
+cljs.battlesnake.snake.game_list = function game_list() {
+  return new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "ul", "ul", -1349521403), new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "li", "li", 723558921), "Game #1"], null), new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "li", "li", 723558921), "Game #2"], null)], null);
+};
+cljs.battlesnake.snake.lobby = function lobby() {
+  return new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null, "div", "div", 1057191632), new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.battlesnake.snake.create_game], null), new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.battlesnake.snake.game_list], null)], null);
+};
+reagent.core.render_component.call(null, new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [cljs.battlesnake.snake.lobby], null), document.body);
