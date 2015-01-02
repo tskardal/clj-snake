@@ -7,8 +7,7 @@
             [ring.middleware.reload :as reload]))
 
 (defroutes app
-  (GET "/" [] (io/resource "public/index.html"))
-  (comment (GET "/ws" [] (-> ws-handler wrap-websocket-handler)))
+  (GET "/home" [] (io/resource "public/index.html"))
   (resources "/"))
 
 (defn start-server []
