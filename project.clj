@@ -17,7 +17,7 @@
 
                 ;; Google Closure (CLS) options configuration
                 :compiler {;; CLS generated JS script filename
-                           :output-to "resourcs/public/js/battlesnake.js"
+                           :output-to "resources/public/js/battlesnake.js"
 
                            ;; minimal JS optimization directive
                            :optimizations :whitespace

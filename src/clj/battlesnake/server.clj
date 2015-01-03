@@ -7,7 +7,7 @@
             [ring.middleware.reload :as reload]))
 
 (defroutes app
-  (GET "/home" [] (io/resource "public/index.html"))
+  (GET "/" [] (io/resource "public/index.html"))
   (resources "/"))
 
 (defn start-server []
