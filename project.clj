@@ -19,7 +19,7 @@
                 :compiler {;; CLS generated JS script filename
                            :output-to "target/classes/public/js/battlesnake.js"
                            :output-dir "target/classes/public/js"
-                           :source-map "target/classes/public/js/battlesnake.js.map"
+                           ;; :source-map "target/classes/public/js/battlesnake.js.map"
 
                            ;; minimal JS optimization directive
                            :optimizations :whitespace
