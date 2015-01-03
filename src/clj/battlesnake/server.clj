@@ -1,4 +1,5 @@
 (ns battlesnake.server
+  (:gen-class)
   (:require [clojure.java.io :as io]
             [compojure.core :refer [defroutes GET]]
             [compojure.handler :refer [site]]
@@ -16,4 +17,4 @@
     (println "Server running!")))
 
 (defn -main [& args]
-  (println "Hello there"))
+  (start-server))
