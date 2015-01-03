@@ -17,7 +17,9 @@
 
                 ;; Google Closure (CLS) options configuration
                 :compiler {;; CLS generated JS script filename
-                           :output-to "resources/public/js/battlesnake.js"
+                           :output-to "target/classes/public/js/battlesnake.js"
+                           :output-dir "target/classes/public/js"
+                           :source-map "target/classes/public/js/battlesnake.js.map"
 
                            ;; minimal JS optimization directive
                            :optimizations :whitespace
@@ -28,5 +30,6 @@
                            ;; we'll be using react through Reagent
                            :preamble ["reagent/react.js"]}}]}
   :profiles {:dev {:plugins [[com.cemerick/austin "0.1.5"]]
-                   :dependencies [[javax.servlet/servlet-api "2.5"]]}}
-  :main battlesnake.server)
+                   :dependencies [[javax.servlet/servlet-api "2.5"]]}})
+
+

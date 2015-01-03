@@ -16,5 +16,4 @@
     (println "Server running!")))
 
 (defn -main [& args]
-  (comment (start-server))
   (println "Hello there"))
