@@ -7,6 +7,12 @@
            39 [1 0]  ; right
            40 [0 1]}); down
 
+(def width 500)
+(def height 500)
+(def block-size 10)
+(def grid-width (/ width block-size))
+(def grid-height (/ height block-size))
+
 (def edibles (atom []))
 
 (defn create-edible []
@@ -38,15 +44,33 @@
 (defn- add-points [& points]
   (vec (apply map + points)))
 
+(defn- crash? [loc {body :body}]
+  (js/console.log (str "loc: " loc))
+  (js/console.log (str "body" body))
+  (js/console.log (str "y < height? " (last loc) " < " grid-height))
+  (or
+   (some #(= % loc) body)
+   (let [[x y] loc]
+     (or
+      (< x 0)
+      (>= x grid-width)
+      (< y 0)
+      (>= y grid-height)))))
+
 (defn- move-snake []  
   (let [h (first (:body @snake))        
         dir (:dir @snake)
         nh (add-points h dir)]
-    (if-let [e (seq (filter #(= nh (:location %)) @edibles))]      
+    (if (crash? nh @snake)
       (do
-        (swap! edibles #(filter (fn [x] (not= nh (:location x))) @edibles))
-        (swap! snake assoc :body (cons nh (:body @snake))))
-      (swap! snake assoc :body (cons nh (butlast (:body @snake)))))))
+        (js/alert "Game over!")
+        (reset! snake (create-snake))
+        (reset! edibles []))
+      (if-let [e (seq (filter #(= nh (:location %)) @edibles))]      
+        (do
+          (swap! edibles #(filter (fn [x] (not= nh (:location x))) @edibles))
+          (swap! snake assoc :body (cons nh (:body @snake))))
+        (swap! snake assoc :body (cons nh (butlast (:body @snake))))))))
 
 (defn handle-input [e]  
   (when-let [dir (dirs (js/parseInt (aget e "keyCode")))]    
