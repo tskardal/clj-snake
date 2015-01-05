@@ -45,9 +45,6 @@
   (vec (apply map + points)))
 
 (defn- crash? [loc {body :body}]
-  (js/console.log (str "loc: " loc))
-  (js/console.log (str "body" body))
-  (js/console.log (str "y < height? " (last loc) " < " grid-height))
   (or
    (some #(= % loc) body)
    (let [[x y] loc]

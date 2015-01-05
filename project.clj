@@ -3,14 +3,16 @@
   :url "http://github.com/tskardal"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.6.0"]
-                 [org.clojure/clojurescript "0.0-2629"]
+  :dependencies [[compojure "1.3.1"]
                  [http-kit "2.1.16"]
+                 [jarohen/chord "0.5.0" :exclusions [org.clojure/clojure]]
+                 [javax.servlet/servlet-api "2.5"]                
+                 [org.clojure/clojure "1.6.0"]                 
+                 [org.clojure/clojurescript "0.0-2665"]               
+                 [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [reagent "0.5.0-alpha"]
-                 [compojure "1.3.1"]
                  [ring/ring-core "1.3.2"]
-                 [ring/ring-devel "1.3.2"]
-                 [javax.servlet/servlet-api "2.5"]]
+                 [ring/ring-devel "1.3.2"]]
   :plugins [[lein-cljsbuild "1.0.4"]]
   :hooks [leiningen.cljsbuild]
   :cljsbuild {:builds
@@ -32,9 +34,8 @@
 
                            ;; we'll be using react through Reagent
                            :preamble ["reagent/react.js"]}}]}
-  :profiles {:dev {:plugins [[com.cemerick/austin "0.1.5"]]
-                   :dependencies []}}
-
+  :profiles {:dev {:plugins [[com.cemerick/austin "0.1.5"]]}}
+  :exclusions [org.clojure/clojure]
   :source-paths ["src/clj"]
   :main battlesnake.server
   :aot [battlesnake.server])
