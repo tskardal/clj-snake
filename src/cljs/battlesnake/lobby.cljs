@@ -24,12 +24,14 @@
    [create-game]
    [game-list]])
 
-(defn listen []
-  (go (let [{:keys [ws-channel]} (<! (ws-ch "ws://localhost:3000/ws"))])
-      (go-loop []
-        (when-let [{:keys [message]} (<! ws-channel)]
-          (js/console.log (str "msg: " message))
-          (recur)))))
+(defn listen [ws-channel]  
+  (go-loop []
+    (when-let [{:keys [message]} (<! ws-channel)]
+      (js/console.log (str "msg: " message))
+      (recur))))
 
 (defn ^:export init [parent]
+  (go (let [{:keys [ws-channel]} (<! (ws-ch "ws://localhost:3000/ws"))]
+        (listen ws-channel)
+        (>! ws-channel "Hoist")))
   (reagent/render-component [lobby] parent))
