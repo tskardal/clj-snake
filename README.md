@@ -1,14 +1,6 @@
-# battlesnake
+# Battlesnake
 
-A Clojure library designed to ... well, that part is up to you.
+A simple project where I try to create a browser based multiplayer snake game.
+Clojure on the server. ClojureScript in the browser.
 
-## Usage
-
-FIXME
-
-## License
-
-Copyright © 2015 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+Will it ever be finished and playable? Who knows!
