@@ -77,17 +77,17 @@
   (reset! snake (create-snake))
   (let [body (aget js/document "body")]
     (.addEventListener body "keydown" handle-input))
-  (comment
-    (js/setInterval move-snake 60)
-    (js/setInterval (fn []
-                      (when (< 2 (count @edibles))
-                        (swap! edibles butlast))
-                      (swap! edibles conj (create-edible)) ; TODO ensure no duplicates
-                      (js/console.log (str "edibles: " @edibles))) 5000)
-    (let [ctx (.getContext canvas "2d")]
-      (letfn [(render []
-                (.clearRect ctx 0 0 500 500)
-                (render-snake ctx @snake)
-                (render-edibles ctx @edibles)
-                (.requestAnimationFrame js/window render))]
-        (.requestAnimationFrame js/window render)))))
+  
+  (js/setInterval move-snake 60)
+  (js/setInterval (fn []
+                    (when (< 2 (count @edibles))
+                      (swap! edibles butlast))
+                    (swap! edibles conj (create-edible)) ; TODO ensure no duplicates
+                    (js/console.log (str "edibles: " @edibles))) 5000)
+  (let [ctx (.getContext canvas "2d")]
+    (letfn [(render []
+              (.clearRect ctx 0 0 500 500)
+              (render-snake ctx @snake)
+              (render-edibles ctx @edibles)
+              (.requestAnimationFrame js/window render))]
+      (.requestAnimationFrame js/window render))))

@@ -40,7 +40,7 @@
   (GET "/" [] (io/resource "public/index.html"))
   (GET "/ws" [] (-> ws-handler wrap-websocket-handler))
   (GET "/games" [] (active-games))
-  (GET "/games/:id" [id] (game-info id))
+  (GET "/games/:id" [id] (io/resource "public/game.html"))
   (POST "/games" {{name :game-name} :body-params} (create-game name))
   (resources "/"))
 

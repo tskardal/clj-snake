@@ -41,7 +41,7 @@
   [:ul
    (for [game @all-games]
      [:li
-      [:a {:href (str "/game/" (game :id))} (game :name)]])])
+      [:a {:href (str "/games/" (game :id))} (game :name)]])])
 
 (defn lobby []
   [:div   
