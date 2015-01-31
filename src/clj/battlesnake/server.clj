@@ -1,9 +1,9 @@
 (ns battlesnake.server
   (:gen-class)
   (:require [chord.http-kit :refer [wrap-websocket-handler]]
-            [clojure.core.async :refer [<! >! put! close! go-loop]]
+            [clojure.core.async :refer [<! >! put! close! go-loop go]]
             [clojure.java.io :as io]
-            [compojure.core :refer [defroutes GET POST]]
+            [compojure.core :refer [defroutes routes GET POST]]
             [compojure.handler :refer [site]]
             [compojure.route :refer [resources]]
             [org.httpkit.server :refer [run-server]]
@@ -15,11 +15,20 @@
 
 (def games (atom {}))
 
+(defmulti recv-cmd :cmd)
+
+(defmethod recv-cmd :join [{id :id} ws-channel]
+  (println "got join to game with id=" id)
+  (go
+    (>! ws-channel (join-game id))))
+
 (defn ws-handler [{:keys [ws-channel] :as req}]
   (println "Connection from " (:remote-addr req))
   (go-loop []
-    (when-let [{:keys [message error] :as msg} (<! ws-channel)]
-      (prn "Message received:" msg)
+    (when-let [{:keys [message error] :as msg} (<! ws-channel)]      
+      (prn "Message received:" message)      
+      (when (:cmd message)
+        (recv-cmd message ws-channel))
       (>! ws-channel (if error
                        (format "Error: '%s'." (pr-str msg))
                        {:received (format "You passed: '%s' at %s." (pr-str message) (java.util.Date.))}))

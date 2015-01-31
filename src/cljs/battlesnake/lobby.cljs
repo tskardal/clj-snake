@@ -7,6 +7,7 @@
 
 (def game-name (atom ""))
 (def all-games (atom []))
+(def ws (atom {}))
 
 (defn handler [response]
   (.log js/console (str response)))
@@ -37,11 +38,21 @@
             :on-change #(reset! game-name (-> % .-target .-value))}]
    [:input {:type "button" :value "Start" :on-click #(on-create-game @game-name)}]])
 
-(defn game-list []
+(defn join-game [id]
+  (go
+    (>! @ws {:cmd :join :id id})))
+
+(defn game-list []  
   [:ul
-   (for [game @all-games]
-     [:li
-      [:a {:href (str "/games/" (game :id))} (game :name)]])])
+   (for [game @all-games]     
+     (let [name (:name game)
+           id (:id game)
+           players (:players game)
+           player-count (count players)]
+       [:li
+        [:div
+         [:span (str name " (" player-count "/4)")]
+         [:button {:on-click #(join-game id)} "Join"]]]))])
 
 (defn lobby []
   [:div   
@@ -63,6 +74,7 @@
 (defn ^:export init [parent]
   (go (let [{:keys [ws-channel]} (<! (ws-ch "ws://localhost:3000/ws"))]
         (listen ws-channel)
+        (reset! ws ws-channel)
         (>! ws-channel "Hoist")))
   (update-games)
   (reagent/render-component [lobby] parent))
