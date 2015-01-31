@@ -25,6 +25,9 @@
                        {:received (format "You passed: '%s' at %s." (pr-str message) (java.util.Date.))}))
       (recur))))
 
+(defn game-states []
+  )
+
 (defn active-games []
   (filter #(= :active (:status %))(vals @games)))
 
@@ -34,7 +37,13 @@
 (defn create-game [name]
   (let [id (next-id)]
     (println "creating " name)
-    (swap! games assoc id {:id id :name name :status :active})))
+    (swap! games assoc id {:id id :name name :status :active :players []})))
+
+(defn join-game [id]
+  (let [player-id (java.util.UUID/randomUUID)
+        players (get-in @games [id :players])]
+    (swap! games assoc-in [id :players] (conj players {:player-id player-id}))
+    player-id))
 
 (defroutes app
   (GET "/" [] (io/resource "public/index.html"))
