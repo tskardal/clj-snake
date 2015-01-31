@@ -46,17 +46,20 @@
     player-id))
 
 (defroutes app
-  (GET "/" [] (io/resource "public/index.html"))
-  (GET "/ws" [] (-> ws-handler wrap-websocket-handler))
+  (GET "/" [] (io/resource "public/index.html"))  
   (GET "/games" [] (active-games))
   (GET "/games/:id" [id] (io/resource "public/game.html"))
   (POST "/games" {{name :game-name} :body-params} (create-game name))
   (resources "/"))
 
+(defroutes ws
+  (GET "/ws" [] (-> ws-handler wrap-websocket-handler)))
+
+(def handler (routes (site (wrap-restful-format app)) ws))
+
 (defn start-server []
-  (-> (site #'app)
-      (reload/wrap-reload)
-      (wrap-restful-format)      
+  (-> handler
+      (reload/wrap-reload)      
       (run-server {:port 3000}))
   (println "Server running!"))
 
