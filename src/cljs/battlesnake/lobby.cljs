@@ -5,9 +5,11 @@
             [ajax.core :refer [GET POST]])
   (:require-macros [cljs.core.async.macros :refer [go go-loop]]))
 
+(def my-id (atom ""))
 (def game-name (atom ""))
 (def all-games (atom []))
 (def ws (atom {}))
+(def active-game (atom {}))
 
 (defn handler [response]
   (.log js/console (str response)))
@@ -35,12 +37,17 @@
   [:div
    [:h3 "Create a game"]
    [:input {:type "text" :value @game-name :placeholder "Name the game!"
-            :on-change #(reset! game-name (-> % .-target .-value))}]
+            :on-change #(reset! game-name (-> % .-target .-value))
+            :on-key-down #(case (.-which %)
+                            13 (on-create-game @game-name)                            
+                            nil)}]
    [:input {:type "button" :value "Start" :on-click #(on-create-game @game-name)}]])
 
 (defn join-game [id]
   (go
-    (>! @ws {:cmd :join :id id})))
+    (>! @ws {:cmd :join :id id})
+    (<! (timeout 500))
+    (fetch-games)))
 
 (defn game-list []  
   [:ul
@@ -59,9 +66,18 @@
    [create-game]
    [game-list]])
 
+(defmulti on-msg :type)
+
+(defmethod on-msg :joined [{:keys [player-id game]}]
+  (reset! my-id player-id)
+  (reset! active-game game)
+  (js/console.log (str "active game: " @active-game)))
+
 (defn listen [ws-channel]  
   (go-loop []
     (when-let [{:keys [message]} (<! ws-channel)]
+      (when (:type message)
+        (on-msg message))
       (js/console.log (str "msg: " message))
       (recur))))
 
@@ -74,7 +90,6 @@
 (defn ^:export init [parent]
   (go (let [{:keys [ws-channel]} (<! (ws-ch "ws://localhost:3000/ws"))]
         (listen ws-channel)
-        (reset! ws ws-channel)
-        (>! ws-channel "Hoist")))
+        (reset! ws ws-channel)))
   (update-games)
   (reagent/render-component [lobby] parent))

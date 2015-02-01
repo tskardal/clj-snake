@@ -15,12 +15,18 @@
 
 (def games (atom {}))
 
+(defn join-game [id]
+  (let [player-id (java.util.UUID/randomUUID)
+        players (get-in @games [id :players])]
+    (swap! games assoc-in [id :players] (conj players {:player-id player-id}))
+    player-id))
+
 (defmulti recv-cmd :cmd)
 
 (defmethod recv-cmd :join [{id :id} ws-channel]
   (println "got join to game with id=" id)
   (go
-    (>! ws-channel (join-game id))))
+    (>! ws-channel {:type :joined :player-id (join-game id) :game (get @games id)})))
 
 (defn ws-handler [{:keys [ws-channel] :as req}]
   (println "Connection from " (:remote-addr req))
@@ -34,9 +40,6 @@
                        {:received (format "You passed: '%s' at %s." (pr-str message) (java.util.Date.))}))
       (recur))))
 
-(defn game-states []
-  )
-
 (defn active-games []
   (filter #(= :active (:status %))(vals @games)))
 
@@ -44,15 +47,9 @@
   (get @games id))
 
 (defn create-game [name]
-  (let [id (next-id)]
-    (println "creating " name)
-    (swap! games assoc id {:id id :name name :status :active :players []})))
-
-(defn join-game [id]
-  (let [player-id (java.util.UUID/randomUUID)
-        players (get-in @games [id :players])]
-    (swap! games assoc-in [id :players] (conj players {:player-id player-id}))
-    player-id))
+  (let [id (next-id)]    
+    (swap! games assoc id {:id id :name name :status :active :players []})
+    ))
 
 (defroutes app
   (GET "/" [] (io/resource "public/index.html"))  
