@@ -15,17 +15,25 @@
                  [ring/ring-core "1.3.2"]
                  [ring/ring-devel "1.3.2"]
                  [ring-middleware-format "0.4.0"]]
-  :plugins [[lein-cljsbuild "1.0.4"]]
+  :plugins [[lein-cljsbuild "1.0.4"]
+            [com.keminglabs/cljx "0.5.0"]]
   :hooks [leiningen.cljsbuild]
+  :cljx {:builds [{:source-paths ["src/cljx"]
+                   :output-path "target/classes"
+                   :rules :clj}
+
+                  {:source-paths ["src/cljx"]
+                   :output-path "target/classes"
+                   :rules :cljs}]}
   :cljsbuild {:builds
               [{;; CLJS source code path
-                :source-paths ["src/cljs"]
+                :source-paths ["src/cljs" "target/classes"]
                 :jar true
 
                 ;; Google Closure (CLS) options configuration
                 :compiler {;; CLS generated JS script filename
                            :output-to "target/classes/public/js/battlesnake.js"
-                           :output-dir "target/classes/public/js"
+                           :output-dir "target/classes"
                            ;; :source-map "target/classes/public/js/battlesnake.js.map"
 
                            ;; minimal JS optimization directive
@@ -38,7 +46,7 @@
                            :preamble ["reagent/react.js"]}}]}
 ;  :profiles {:dev {:plugins [[com.cemerick/austin "0.1.5"]]}}
   :exclusions [org.clojure/clojure]
-  :source-paths ["src/clj"]
+  :source-paths ["src/clj" "target/classes"]
   :main battlesnake.server
 ;  :aot [battlesnake.server]
   :repl-options {:timeout 120000})

@@ -24,6 +24,11 @@
    :dir [1 0]
    :type :snake})
 
+(defn sync 
+  "Perform synchronization with the server"
+  []
+  )
+
 (defn render-snake [ctx snake]
   (set! (.-fillStyle ctx) "rgb(200, 0, 200)")
   (doseq [[x y] (:body snake)]

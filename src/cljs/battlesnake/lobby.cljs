@@ -88,6 +88,9 @@
     (recur)))
 
 (defn ^:export init [parent]
+  (js/console.log "before")
+  (snake/update)
+  (js/console.log "after")
   (go (let [{:keys [ws-channel]} (<! (ws-ch "ws://localhost:3000/ws"))]
         (listen ws-channel)
         (reset! ws ws-channel)))
