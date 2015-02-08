@@ -1,6 +1,7 @@
 (ns battlesnake.server
   (:gen-class)
-  (:require [chord.http-kit :refer [wrap-websocket-handler]]
+  (:require [battlesnake.game :as g]
+            [chord.http-kit :refer [wrap-websocket-handler]]
             [clojure.core.async :refer [<! >! put! close! go-loop go]]
             [clojure.java.io :as io]
             [compojure.core :refer [defroutes routes GET POST]]
@@ -8,17 +9,18 @@
             [compojure.route :refer [resources]]
             [org.httpkit.server :refer [run-server]]
             [ring.middleware.format :refer [wrap-restful-format]]
-            [ring.middleware.reload :as reload]))
+            [ring.middleware.reload :as reload]
+            [snake :as s]))
 
 (def idseq (java.util.concurrent.atomic.AtomicInteger.))
 (defn next-id [] (.getAndIncrement idseq))
 
 (def games (atom {}))
 
-(defn join-game [id]
+(defn join-game [id ws]
   (let [player-id (java.util.UUID/randomUUID)
-        players (get-in @games [id :players])]
-    (swap! games assoc-in [id :players] (conj players {:player-id player-id}))
+        game (get @games id)]
+    (swap! games assoc id (s/add-player game {:id player-id :ws ws}))
     player-id))
 
 (defmulti recv-cmd :cmd)
@@ -26,7 +28,13 @@
 (defmethod recv-cmd :join [{id :id} ws-channel]
   (println "got join to game with id=" id)
   (go
-    (>! ws-channel {:type :joined :player-id (join-game id) :game (get @games id)})))
+    (>! ws-channel {:type :joined :player-id (join-game id ws-channel) :game (get @games id)})
+    (g/start (get @games id))))
+
+(defn test [a b]
+  (println "a:" a)
+  (when b
+    (println "b: " b)))
 
 (defn ws-handler [{:keys [ws-channel] :as req}]
   (println "Connection from " (:remote-addr req))

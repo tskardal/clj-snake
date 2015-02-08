@@ -73,6 +73,9 @@
   (reset! active-game game)
   (js/console.log (str "active game: " @active-game)))
 
+(defmethod on-msg :default [msg]
+  (js/console.log (str "Unhandled: " msg)))
+
 (defn listen [ws-channel]  
   (go-loop []
     (when-let [{:keys [message]} (<! ws-channel)]

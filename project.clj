@@ -44,9 +44,10 @@
 
                            ;; we'll be using react through Reagent
                            :preamble ["reagent/react.js"]}}]}
-;  :profiles {:dev {:plugins [[com.cemerick/austin "0.1.5"]]}}
+  :profiles {:dev {:dependencies [[midje "1.6.3"]]}}
   :exclusions [org.clojure/clojure]
   :source-paths ["src/clj" "target/classes"]
+  :test-paths ["test" "target/classes"]
   :main battlesnake.server
 ;  :aot [battlesnake.server]
   :repl-options {:timeout 120000})
