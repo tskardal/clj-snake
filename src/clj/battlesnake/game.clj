@@ -16,7 +16,7 @@
       (let [ug (s/tick @state)]
         ; TODO game over?
         (doseq [p players]
-          (>! (:ws p) (str "updated game: " ug)))
+          (>! (:ws p) {:type :tick :game ug}))
         (reset! state ug)
         (<! (timeout 1000))
         (recur)))))

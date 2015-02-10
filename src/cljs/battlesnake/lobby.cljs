@@ -1,8 +1,9 @@
 (ns battlesnake.lobby
-  (:require [chord.client :refer [ws-ch]]
+  (:require [ajax.core :refer [GET POST]]
+            [battlesnake.snake :as snake]
+            [chord.client :refer [ws-ch]]
             [cljs.core.async :refer [chan <! >! put! close! timeout]]
-            [reagent.core :as reagent :refer [atom]]
-            [ajax.core :refer [GET POST]])
+            [reagent.core :as reagent :refer [atom]])
   (:require-macros [cljs.core.async.macros :refer [go go-loop]]))
 
 (def my-id (atom ""))
@@ -17,8 +18,7 @@
 (defn error-handler [{:keys [status status-text]}]
   (.log js/console (str "something bad happened: " status " " status-text)))
 
-(defn- on-create-game [name]
-  (js/console.log (str "name: " name))
+(defn- on-create-game [name]  
   (reset! game-name "")
   (POST "/games"
         {:params {:game-name name
@@ -66,12 +66,25 @@
    [create-game]
    [game-list]])
 
+(def game-state (atom {}))
+
 (defmulti on-msg :type)
 
 (defmethod on-msg :joined [{:keys [player-id game]}]
   (reset! my-id player-id)
   (reset! active-game game)
   (js/console.log (str "active game: " @active-game)))
+
+(defmethod on-msg :starting [_]
+  (js/console.log "starting")
+  (go
+    (<! (timeout 3000))
+    ;; TODO eww. this shared atom smells
+    (snake/start (.querySelector js/document "canvas#game") game-state)))
+
+(defmethod on-msg :tick [{game :game}]
+  (js/console.log (str "tick for game " game))
+  (reset! game-state game))
 
 (defmethod on-msg :default [msg]
   (js/console.log (str "Unhandled: " msg)))
@@ -90,10 +103,7 @@
     (<! (timeout 5000))
     (recur)))
 
-(defn ^:export init [parent]
-  (js/console.log "before")
-  (snake/update)
-  (js/console.log "after")
+(defn ^:export init [parent]  
   (go (let [{:keys [ws-channel]} (<! (ws-ch "ws://localhost:3000/ws"))]
         (listen ws-channel)
         (reset! ws ws-channel)))
