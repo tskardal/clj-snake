@@ -69,11 +69,10 @@
     (swap! snake assoc :dir dir)))
 
 (defn render-game [ctx game]
-  (doseq [p (:players game)]
-    (js/console.log (str "Rendering player " p))
+  (doseq [p (:players game)]    
     (render-snake ctx p)))
 
-(defn start [canvas game]
+(defn start [canvas game]  
   (let [body (aget js/document "body")]
     (.addEventListener body "keydown" handle-input))
   (comment s

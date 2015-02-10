@@ -20,15 +20,15 @@
 (defn join-game [id ws]
   (let [player-id (java.util.UUID/randomUUID)
         game (get @games id)]
-    (swap! games assoc id (s/add-player game {:id player-id :ws ws}))
+    (swap! games assoc id (s/add-player game {:id player-id :ws ws}))    
     player-id))
 
 (defmulti recv-cmd :cmd)
 
 (defmethod recv-cmd :join [{id :id} ws-channel]
   (println "got join to game with id=" id)
-  (go
-    (>! ws-channel {:type :joined :player-id (join-game id ws-channel) :game (get @games id)})
+  (go    
+    (>! ws-channel {:type :joined :player-id (join-game id ws-channel) :game (get @games id)})    
     (g/start (get @games id))))
 
 (defn test [a b]
