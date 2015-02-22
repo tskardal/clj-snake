@@ -1,26 +1,31 @@
 (ns battlesnake.game
-  (:require [clojure.core.async :refer [<! >! put! close! go-loop go timeout]]
+  (:require [clojure.core.async :refer [<! <!! >! put! close! go-loop go timeout]]
             [snake :as s]))
 
-(defn- notify-start [players game-id]
+(defn- notify-start [conns game-id]
   (go
-    (doseq [p players]
-      (>! (:ws p) {:type :starting :game game-id}))
-    (<! (timeout 3000))))
+    (doseq [[_ ws] conns]
+      (>! ws {:type :starting :game game-id}))
+    (<!! (timeout 3000))))
 
-(defn- prepare [game]
-  (let [players (:players game)]
-    (assoc game :players (map #(dissoc % :ws) players))))
+(defn- prepare [{players :players}]
+  (for [player players]
+    (dissoc player :ws)))
 
-(defn start [game]
-  (let [state (atom game)
-        players (:players game)]    
-    (notify-start players (:id game))
-    (go-loop []
-      (let [ug (s/tick @state)]
-        ; TODO game over?        
-        (doseq [p players]          
-          (>! (:ws p) {:type :tick :game (prepare ug)}))
-        (reset! state ug)
-        (<! (timeout 1000))
-        (recur)))))
+(defn- connections [{players :players}]
+  (apply merge
+         (for [player players]
+           {(:id player) (:ws player)})))
+
+(defn start [game-info]
+  (let [game (dissoc game-info :players)
+        players (prepare game-info)
+        conns (connections game-info)]    
+    (notify-start conns (:id game-info))
+    (go-loop [state (s/tick players)]
+      ;; TODO game over?
+      (println "tick")
+      (doseq [[_ ws] conns]          
+        (>! ws {:type :tick :game state}))      
+      (<! (timeout 1000))     
+      (recur (s/tick state)))))

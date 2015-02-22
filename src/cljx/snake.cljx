@@ -5,11 +5,6 @@
                       {:dir [-1 0] :body[[3 1] [2 1] [1 1]]}
                       {:dir [0 -1] :body[[1 7] [1 8] [1 9]]}])
 
-(defn update []
-  (let [msg "updatz!"]
-    #+clj (println msg)
-    #+cljs (js/console.log msg)))
-
 (defn create-new []
   {:width 10 :height 10})
 
@@ -29,6 +24,6 @@
         moved (conj (butlast body) (add-points head dir))]
     (assoc player :body moved)))
 
-(defn tick [game]
-  (let [players (:players game)]
-    (assoc game :players (map #(move-player %) players))))
+(defn tick [players]
+  (vec (for [p players]
+         (move-player p))))

@@ -27,14 +27,10 @@
 
 (defmethod recv-cmd :join [{id :id} ws-channel]
   (println "got join to game with id=" id)
-  (go    
-    (>! ws-channel {:type :joined :player-id (join-game id ws-channel) :game (get @games id)})    
-    (g/start (get @games id))))
-
-(defn test [a b]
-  (println "a:" a)
-  (when b
-    (println "b: " b)))
+  (go
+    (let [game (get @games id)]
+      (>! ws-channel {:type :joined :player-id (join-game id ws-channel) :game game})    
+      (g/start (get @games id))))) ;; TODO shouldn't start right away.
 
 (defn ws-handler [{:keys [ws-channel] :as req}]
   (println "Connection from " (:remote-addr req))

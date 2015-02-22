@@ -1,5 +1,7 @@
 (ns battlesnake.snake
-  (:require [reagent.core :as reagent :refer [atom]]))
+  (:require [reagent.core :as reagent :refer [atom]]
+            [goog.events :as events]
+            [goog.dom :as dom]))
 
 (def dirs {37 [-1 0] ; left
            38 [0 -1] ; up
@@ -68,15 +70,14 @@
   (when-let [dir (dirs (js/parseInt (aget e "keyCode")))]    
     (swap! snake assoc :dir dir)))
 
-(defn render-game [ctx game]
-  (doseq [p (:players game)]    
+(defn render-game [ctx players]
+  (doseq [p players]    
     (render-snake ctx p)))
 
 (defn start [canvas game]  
-  (let [body (aget js/document "body")]
-    (.addEventListener body "keydown" handle-input))
-  (comment s
-    (js/setInterval move-snake 60)
+  (let [body document.body]
+    (events/listen body "keydown" handle-input))
+  (comment s  
     (js/setInterval (fn []
                       (when (< 2 (count @edibles))
                         (swap! edibles butlast))

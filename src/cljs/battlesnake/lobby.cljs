@@ -3,7 +3,8 @@
             [battlesnake.snake :as snake]
             [chord.client :refer [ws-ch]]
             [cljs.core.async :refer [chan <! >! put! close! timeout]]
-            [reagent.core :as reagent :refer [atom]])
+            [reagent.core :as reagent :refer [atom]]
+            [goog.dom :as dom])
   (:require-macros [cljs.core.async.macros :refer [go go-loop]]))
 
 (def my-id (atom ""))
@@ -78,9 +79,9 @@
 (defmethod on-msg :starting [_]
   (js/console.log "starting")
   (go
-    (<! (timeout 3000))
+    (<! (timeout 2000))
     ;; TODO eww. this shared atom smells
-    (snake/start (.querySelector js/document "canvas#game") game-state)))
+    (snake/start (dom/getElement "game") game-state)))
 
 (defmethod on-msg :tick [{game :game}]
   (js/console.log (str "tick for game " game))
